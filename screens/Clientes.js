@@ -11,7 +11,6 @@ export default function Clients() {
   const [newClient, setNewClient] = useState({ name: '', phoneNumber: '', address: '' });
   const [editingIndex, setEditingIndex] = useState(-1);
 
-
   useEffect(() => {
     loadClients();
   }, []);
