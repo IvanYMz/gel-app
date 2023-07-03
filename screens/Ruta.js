@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Icon } from '@rneui/themed';
 
@@ -39,7 +39,12 @@ export default function RouteAsHome() {
                     options={{
                         tabBarLabel: '',
                         tabBarIcon: ({ color, size }) => (
-                            <Icon name="map" type='fontisto' color={color} size={size} />
+                            <Icon name="directions" type='simple-line-icon' color={color} size={size} />
+                        ),
+                        headerRight: () => (
+                            <TouchableOpacity style={{marginTop: 5, width: '25%',}}>
+                                <Icon name='three-bars' type='octicon' color={'gray'} size={22} />
+                            </TouchableOpacity>
                         ),
                     }}
                 />
@@ -59,7 +64,7 @@ export default function RouteAsHome() {
                     options={{
                         tabBarLabel: '',
                         tabBarIcon: ({ color, size }) => (
-                            <Icon name="people" type='octicons' color={color} size={size} />
+                            <Icon name="people" type='octicon' color={color} size={size} />
                         ),
                     }}
                 />

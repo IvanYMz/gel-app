@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { View, TouchableOpacity, Text, ScrollView, TextInput, StyleSheet, Alert } from 'react-native';
-import { ListItem, Overlay } from '@rneui/themed';
+import { ListItem, Overlay, } from '@rneui/themed';
 import { Icon } from '@rneui/base';
 import React, { useState, useEffect } from 'react';
 import AsyncStorageUtils from '../storage/AsyncStorageUtils';
@@ -103,9 +103,10 @@ export default function Clients() {
 
   // Render ClientList
   const renderClientList = () => {
+
     if (clients.length === 0) {
       return (
-        <Text style={{ textAlign: 'center', marginTop: 20 }}>
+        <Text style={{ textAlign: 'center', marginTop: 20, fontSize: 16,}}>
           La lista de clientes está vacía...
         </Text>
       );
@@ -115,31 +116,13 @@ export default function Clients() {
       <ListItem.Swipeable
         key={index}
         leftContent={(reset) => (
-          <TouchableOpacity
-            onPress={() => { handleEdit(index); reset(); }}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: 'lightblue',
-              justifyContent: 'center',
-              minHeight: '100%',
-            }}
-          >
+          <TouchableOpacity onPress={() => { handleEdit(index); reset(); }} style={styles.leftContentStyle}>
             <Icon name="user-edit" type="font-awesome-5" size={18} color="white" />
             <Text style={{ color: 'white', marginLeft: 10 }}>Editar</Text>
           </TouchableOpacity>
         )}
         rightContent={(reset) => (
-          <TouchableOpacity
-            onPress={() => { handleDelete(index); reset(); }}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: '#F15A59',
-              justifyContent: 'center',
-              minHeight: '100%',
-            }}
-          >
+          <TouchableOpacity onPress={() => { handleDelete(index); reset(); }} style={styles.rightContentStyle}>
             <Icon name="trash" type="entypo" size={20} color="white" />
             <Text style={{ color: 'white', marginLeft: 10 }}>Eliminar</Text>
           </TouchableOpacity>
@@ -162,16 +145,15 @@ export default function Clients() {
         <StatusBar style="auto" />
       </ScrollView>
       <TouchableOpacity onPress={toggleModal} style={styles.addClientStyle}>
-        <Icon name="person-add" type="ionicons" size={25} color="white" />
+        <Icon name="person-add" type="ionicons" size={30} color="white" />
       </TouchableOpacity>
 
-      {/* Overlay para agregar nuevo cliente */}
       <Overlay isVisible={isModalVisible} onBackdropPress={toggleModal} overlayStyle={styles.editContainerOverlay}>
         <View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 5, }}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Agregar nuevo cliente</Text>
+            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Agregar información del cliente</Text>
             <TouchableOpacity
-              onPress={toggleModal}
+              onPress={() => { setNewClient({ name: '', phoneNumber: '', address: '' }); toggleModal(); setEditingIndex(-1); }}
               style={{ marginLeft: 'auto', marginBottom: 5 }}
             >
               <Icon name="close" style={'ionicon'} size={20} />
@@ -187,7 +169,7 @@ export default function Clients() {
             />
           </View>
           <View style={styles.editContainer}>
-            <View style={styles.inputIcon}><Icon name="phone" type='feather' size={24} color="white" /></View>
+            <View style={styles.inputIcon}><Icon name="phone" type='feather' size={25} color="white" /></View>
             <TextInput
               placeholder="Número de teléfono"
               value={newClient.phoneNumber}
@@ -212,7 +194,6 @@ export default function Clients() {
           </View>
         </View>
       </Overlay>
-
     </View>
   );
 };
@@ -222,9 +203,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     right: 20,
-    borderRadius: 25,
-    width: 50,
-    height: 50,
+    borderRadius: 27.5,
+    width: 55,
+    height: 55,
     backgroundColor: '#FF7777',
     justifyContent: 'center',
     alignItems: 'center',
@@ -278,5 +259,21 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 6,
     borderColor: 'lightgray',
     borderWidth: 0.5,
+  },
+  leftContentStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'lightblue',
+    justifyContent: 'center',
+    minHeight: '100%',
+    borderRadius: 2,
+  },
+  rightContentStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F15A59',
+    justifyContent: 'center',
+    minHeight: '100%',
+    borderRadius: 2,
   },
 });
