@@ -189,7 +189,7 @@ export default function Clients() {
           </View>
           <View style={{ alignItems: 'center', marginTop: 5 }}>
             <TouchableOpacity onPress={handleSubmit} style={styles.addButton}>
-              <Text style={{ color: "#917FB3", fontSize: 15, }}>Agregar</Text>
+              <Text style={{ color: "#917FB3", fontSize: 15, }}>Aceptar</Text>
             </TouchableOpacity>
           </View>
         </View>
