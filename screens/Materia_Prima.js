@@ -1,6 +1,6 @@
+import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert } from 'react-native';
-import React, { useState, useEffect } from 'react';
 import { Icon, ListItem, Overlay, ButtonGroup } from '@rneui/base';
 import AsyncStorageUtils from '../storage/AsyncStorageUtils';
 
@@ -14,7 +14,6 @@ export default function RawMaterial() {
   const [iconInput, setIconInput] = useState({});
   const [isUpdatingIngredient, setIsUpdatingIngredient] = useState(false);
 
-
   useEffect(() => {
     loadStock();
   }, []);
@@ -24,12 +23,14 @@ export default function RawMaterial() {
     const storedStock = await AsyncStorageUtils.obtenerData('stock');
     if (storedStock) {
       setStockData(storedStock);
-    } else { // If there is no stock...
-      const initialIngredients =
-        [{ name: 'Leche', amount: 0, unit: '', },
+    } else {
+      // If there is no stock, create initial ingredients
+      const initialIngredients = [
+        { name: 'Leche', amount: 0, unit: '', },
         { name: 'Vainilla', amount: 0, unit: '' },
         { name: 'Azucar', amount: 0, unit: '' },
-        { name: 'Grenetina', amount: 0, unit: '' }]
+        { name: 'Grenetina', amount: 0, unit: '' }
+      ];
 
       await AsyncStorageUtils.guardarData('stock', initialIngredients);
     }
@@ -41,7 +42,7 @@ export default function RawMaterial() {
   };
 
   const clearValuesForUpdatingStock = () => {
-    setIsUpdatingIngredient(!isUpdatingIngredient);
+    setIsUpdatingIngredient(false);
     setSelectedIndex(-1);
     setAmount(0);
     setSelectedUnit('');
@@ -49,7 +50,10 @@ export default function RawMaterial() {
 
   // Update stock
   const handleUpdateStock = () => {
-    if (selectedUnit === '') { Alert.alert('Por favor, seleccione la unidad para el ingrediente ' + selectedIngredient.name); return; }
+    if (selectedUnit === '') {
+      Alert.alert('Por favor,  seleccione la unidad para el ingrediente ' + selectedIngredient.name);
+      return;
+    }
 
     selectedIngredient.unit === '' ? selectedIngredient.unit = selectedUnit : null;
     // Update quantity regardless of the unit
@@ -61,6 +65,7 @@ export default function RawMaterial() {
       selectedIngredient.amount += parseFloat((amount * 1000));
     }
 
+    // Handle unit conversions
     if (!(selectedIngredient.unit === 'Litros' || selectedIngredient.unit === 'Kilos') && selectedIngredient.amount >= 1000) {
       selectedIngredient.amount = parseFloat(selectedIngredient.amount / 1000);
       selectedIngredient.unit = selectedIngredient.unit === 'Mililitros' ? 'Litros' : 'Kilos';
@@ -91,7 +96,7 @@ export default function RawMaterial() {
   const clearIngredient = () => {
     Alert.alert(
       '¿Reiniciar?',
-      'La cantidad se reducirá a 0, ¿continuar?',
+      'La cantidad se volverá 0. ¿Continuar?',
       [
         {
           text: 'Cancelar',
@@ -128,12 +133,12 @@ export default function RawMaterial() {
 
   const isEnough = (item) => {
     if (item.name === 'Azucar') {
-      return (!(item.amount <= 3));
+      return !(item.amount <= 3);
     } else if (item.name === 'Grenetina') {
-      return (!(item.amount <= 1));
-    } else if (item.name === 'Vainilla') {
-      return (!(item.amount <= 100));
-    } else { return true; }
+      return !(item.amount <= 1);
+    } else {
+      return true;
+    }
   };
 
   const renderIngredientsList = () => {
@@ -146,31 +151,42 @@ export default function RawMaterial() {
               <TouchableOpacity
                 onPress={() => {
                   setSelectedIngredient(item);
-                  if (item.name === 'Leche') { setIconInput({ name: 'bottle-soda', type: 'material-community' }); setUnits(['Litros', 'Mililitros']); }
-                  else if (item.name === 'Vainilla') { setIconInput({ name: 'bottle-tonic', type: 'material-community' }); setUnits(['Litros', 'Mililitros']); }
-                  else if (item.name === 'Azucar') { setIconInput({ name: 'spoon-sugar', type: 'material-community' }); setUnits(['Kilos', 'Gramos']); }
-                  else { setIconInput({ name: 'bowl-mix', type: 'material-community' }); setUnits(['Kilos', 'Gramos']); }
+                  if (item.name === 'Leche') {
+                    setIconInput({ name: 'bottle-soda', type: 'material-community' });
+                    setUnits(['Litros', 'Mililitros']);
+                  } else if (item.name === 'Vainilla') {
+                    setIconInput({ name: 'bottle-tonic', type: 'material-community' });
+                    setUnits(['Litros', 'Mililitros']);
+                  } else if (item.name === 'Azucar') {
+                    setIconInput({ name: 'spoon-sugar', type: 'material-community' });
+                    setUnits(['Kilos', 'Gramos']);
+                  } else {
+                    setIconInput({ name: 'bowl-mix', type: 'material-community' });
+                    setUnits(['Kilos', 'Gramos']);
+                  }
                   setIsUpdatingIngredient(!isUpdatingIngredient);
                   reset();
                 }}
                 style={styles.rightContentStyle}
               >
                 <Icon name="shoppingcart" type="antdesign" size={25} color="white" />
-                <Text style={{ color: 'white', marginLeft: 8, fontSize: 16, }}>Actualizar</Text>
+                <Text style={{ color: 'white', marginLeft: 8, fontSize: 16 }}>Update</Text>
               </TouchableOpacity>
             )}
-            containerStyle={{ height: 120, }}
+            containerStyle={{ height: 120 }}
           >
             <ListItem.Content>
-              <ListItem.Title style={{ fontSize: 28, }}>{isEnough(item) ? item.name : '¡' + item.name + ' requiere atención!'} </ListItem.Title>
-              <Text style={{ fontSize: 16, color: 'gray', }}>En existencia: {item.amount} {item.unit}</Text>
+              <ListItem.Title style={{ fontSize: 26 }}>
+                {isEnough(item) ? item.name : '¡' + item.name + ' se está terminando!'}
+              </ListItem.Title>
+              <Text style={{ fontSize: 16, color: 'gray' }}>Disponible: {item.amount} {item.unit}</Text>
             </ListItem.Content>
             <ListItem.Chevron />
           </ListItem.Swipeable>
         ))}
       </View>
     );
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -192,17 +208,18 @@ export default function RawMaterial() {
       {renderIngredientsList()}
       <Overlay isVisible={isUpdatingIngredient} onBackdropPress={clearValuesForUpdatingStock} overlayStyle={styles.editContainerOverlay}>
         <View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 5, }}>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>{selectedIngredient.name} disponible: {selectedIngredient.amount} {selectedIngredient.unit}</Text>
-            <TouchableOpacity
-              onPress={clearValuesForUpdatingStock}
-              style={{ marginLeft: 'auto', marginBottom: 5 }}
-            >
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 5 }}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>
+              {selectedIngredient.name} disponible: {selectedIngredient.amount} {selectedIngredient.unit}
+            </Text>
+            <TouchableOpacity onPress={clearValuesForUpdatingStock} style={{ marginLeft: 'auto', marginBottom: 5 }}>
               <Icon name="close" style={'ionicon'} size={20} />
             </TouchableOpacity>
           </View>
           <View style={styles.editContainer}>
-            <View style={styles.inputIcon}><Icon name={iconInput.name} type={iconInput.type} size={34} color="white" /></View>
+            <View style={styles.inputIcon}>
+              <Icon name={iconInput.name} type={iconInput.type} size={34} color="white" />
+            </View>
             <TextInput
               keyboardType='numeric'
               placeholder="Cantidad"
@@ -213,7 +230,7 @@ export default function RawMaterial() {
               buttons={units}
               vertical
               buttonStyle={styles.unitButtonStyle}
-              textStyle={{ color: "#917FB3", fontSize: 14, }}
+              textStyle={{ color: "#917FB3", fontSize: 14 }}
               selectedButtonStyle={styles.selectedUnitButton}
               selectedIndex={selectedIndex}
               onPress={(value) => {
@@ -225,10 +242,10 @@ export default function RawMaterial() {
           </View>
           <View style={{ alignItems: 'center', marginTop: 5 }}>
             <TouchableOpacity onPress={handleUpdateStock} style={styles.acceptButton}>
-              <Text style={{ color: "#917FB3", fontSize: 15, }}>Aceptar</Text>
+              <Text style={{ color: "#917FB3", fontSize: 15 }}>Aceptar</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={clearIngredient} style={styles.clearButton}>
-              <Text style={{ color: "#917FB3", fontSize: 10, }}>Reiniciar</Text>
+              <Text style={{ color: "#917FB3", fontSize: 10 }}>Reiniciar</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -259,18 +276,12 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.50,
+    shadowOpacity: 0.5,
     shadowRadius: 3.84,
     elevation: 20,
   },
-  itemIngredientContainer: {
-    padding: 10,
-    backgroundColor: 'beige',
-    borderWidth: 1,
-    borderColor: 'gray',
-    width: '80%',
-    height: '50%',
-    borderRadius: 5,
+  itemListContainer: {
+    marginTop: 20,
   },
   rightContentStyle: {
     flexDirection: 'row',
@@ -286,9 +297,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginHorizontal: 25,
     marginBottom: 5,
-  },
-  itemListContainer: {
-    marginTop: 20,
   },
   item: {
     height: '28%',

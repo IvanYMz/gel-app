@@ -21,6 +21,15 @@ const AsyncStorageUtils = {
         }
         return null;
     },
+    
+    borrarData: async (key) => {
+        try {
+            await AsyncStorage.removeItem(key);
+            console.log(`Se ha borrado "${key}" del AsyncStorage correctamente.`);
+        } catch (error) {
+            console.error(`Error al borrar "${key}" del AsyncStorage:`, error);
+        }
+    },
 };
 
 export default AsyncStorageUtils;
